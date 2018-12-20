@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>React - Template</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+    <script src="browser.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</head>
+<body>
+
+
+  <div  id="root" ></div>
+  
+<div id="messageDisplays">
+      <div id="errorEmailMsg"></div>
+      <div  id="errorMsg" ></div>
+      <div  id="displayName" ></div>
+      <div  id="displayEmail" ></div>
+</div>
+      <div  id="button"></div>
+      <div id="databaseResults"></div>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</body>
+</html>
+<script type="text/babel">
+
+  class UserNameInputForm extends React.Component{
+    constructor(props){
+      super(props);
+      this.state = {
+        name:'',
+        email:''
+      }
+      this.inputChangeName = this.inputChangeName.bind(this);
+      this.inputChangeEmail = this.inputChangeEmail.bind(this);
+      this.validateEmail = this.validateEmail.bind(this);
+      this.submitInfo = this.submitInfo.bind(this);
+    }
+    
+    inputChangeName(event){
+      const name = event.target.value;
+      this.setState({
+        name:name
+      });
+      document.getElementById('displayName').innerHTML = "<h3>" + name + "</h3>";
+    }
+  
+    inputChangeEmail(event){
+      const email = event.target.value;
+      this.setState({
+        email:email
+      });
+      document.getElementById('displayEmail').innerHTML = "<h3>" + email + "</h3>";
+    }
+
+    //EXAMPLE CODE/FUNCTION (NOT MY OWN), USED TO DO CHECK FOR VALID EMAIL
+    validateEmail(email){
+      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+            return (true)
+          } else {
+            document.getElementById('errorEmailMsg').innerHTML = "<h2>Not a valid email!</h2>";
+            return (false)
+          }
+    }
+  
+    submitInfo(e){
+      e.preventDefault();
+     
+      const name = this.state.name;
+      const email = this.state.email;
+    
+      //CHECK FOR EMPTY VALUES FROM THE INPUTS AND DISPLAY ERROR MESSAGE
+      if(name ==  "" || email == ""){
+          document.getElementById('errorMsg').innerHTML = "<h2>Enter both values please!</h2>";
+      } else {
+        document.getElementById('errorMsg').innerHTML = "";
+          if(this.validateEmail(email)){
+            //CLEARS THE VALUES THAT IS DISPLAYED OUT TO THE PAGE AS USER TYPES INTO THE INPUTS
+            document.getElementById('displayName').innerHTML = "";
+            document.getElementById('displayEmail').innerHTML = "";
+        
+            //THIS CREATES A VARIABLE TO STORE THE VALUES FROM THE INPUTS TO PASS
+            //IT AS PARAMATERS TO THE PHP FILE TO SUBMIT TO DATABASE
+            const params = "name=" + name + "&email=" + email;
+
+            //AJAX CALL TO SUBMIT THE FORM
+            const request = new XMLHttpRequest();
+            request.open("POST","submit.php",true);
+            request.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+            
+            request.send(params);
+            
+            //THIS RESETS THE STATE OF COMPONENTS BACK TO EMPTY VALUES FOR NEXT ENTRY
+            this.setState({
+              name:''
+            });
+            this.setState({
+              email:''
+            });
+          
+            //THIS CLEARS THE VALUES THAT WAS ENTERED IN THE INPUTS
+            document.getElementById('nameInput').value = "";
+            document.getElementById('emailInput').value = "";
+            document.getElementById('errorEmailMsg').innerHTML = "";
+            location.reload('index.html');
+        } 
+      }
+    }
+
+    render(){
+      return(
+        <div>
+          <form  method="POST" action="submit.php">
+            <input className='form-control' id='nameInput' type='text' onChange={this.inputChangeName} value={this.state.name}  placeholder='enter your name' required/>
+            <input className='form-control' id='emailInput' type='text' onChange={this.inputChangeEmail} value={this.state.email}  placeholder='enter email' required/>
+            <small id="emailHelp" className="form-text text-muted">We'll never share your email or info with anyone else.</small>
+            <input className="btn btn-primary" id='submitButton' type='submit'onClick={this.submitInfo} value='submit'/>
+          </form>
+        </div>
+      ) 
+    }
+  }
+  ReactDOM.render(<UserNameInputForm/>,document.getElementById('root'));
+
+class DisplayDatabaseInfo extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      data:[]
+    }
+
+    this.deleteUser = this.deleteUser.bind(this);
+  }
+
+componentDidMount(){
+  const getRequest = new XMLHttpRequest();
+    getRequest.open("GET","get_info.php",true);
+    getRequest.onload = ()=>{
+        
+      if(getRequest.status == 200 || getRequest.readyState == 4){
+        const resultsUnparsed = getRequest.responseText;
+        const newResultsParsed = JSON.parse(resultsUnparsed);
+    
+        const databaseResponseResult =  newResultsParsed.response;
+    
+        this.setState({
+          data:databaseResponseResult
+        });
+
+        } else {
+          document.getElementById('databaseResults').innerHTML = "Error occured try again later.";
+        }
+      }
+    getRequest.send();   
+  }
+
+  deleteUser(event){
+    const index = event.target.value;
+
+    const deleteRequest = new XMLHttpRequest();
+    deleteRequest.open('DELETE','delete_user.php',true);
+    deleteRequest.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+   
+    deleteRequest.send();
+
+    location.reload('index.html');
+  }
+
+  render(){
+    const dataResultStoredInState = this.state.data;
+        if(dataResultStoredInState == null){
+          return (
+          <table className="table table-striped table-dark">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+            </tbody>
+            <input  type="submit" className='btn btn-danger' onClick={this.deleteUser} value='Delete All'/>
+          </table> 
+        )
+        } else{
+          const displayResults = dataResultStoredInState.map((user,i)=>(
+         <tr>
+          <td><li id="listItem"  value={i} key={i}>{user[0]}</li></td>
+          <td><li id="listItem"  value={i} key={i}>{user[1]}</li></td>
+         </tr>
+        ));
+       
+        return (
+          <table className="table table-striped table-dark">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayResults}
+            </tbody>
+            <input  type="submit" className='btn btn-danger' onClick={this.deleteUser} value='Delete All'/>
+          </table> 
+        )
+    }
+  
+  
+  }
+}
+ReactDOM.render(<DisplayDatabaseInfo/>,document.getElementById('databaseResults'));
+</script>

@@ -1,0 +1,129 @@
+#root{
+    width:40%;
+    float: left;
+    margin:2%;
+}
+
+#nameInput,#emailInput{
+    margin-bottom: 2%;
+}
+#messageDisplays{
+    width: 40%;
+    height: 100px;
+    margin-left:2%;
+}
+small{
+    margin-bottom: 1%;
+}
+#databaseResults{
+    margin-top:-100px;
+    padding: 10px;
+    width:50%;
+    height: 400px;
+    float: right;
+}
+
+#listItem{
+    list-style: none;
+}
+
+/* MEDIA QUERIES/BREAKPOINTS */
+@media only screen and (max-width:768px){
+    #root{
+        float:none;
+        width:95%;
+    }
+    #errorMsg h2,#errorEmailMsg h2{
+        font-size:120%;
+    }
+    #databaseResults{
+        margin-top:5%;
+        float: none;
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width:425px){
+    #root,#databaseResults{
+        float:none;
+        width:95%;
+    }
+    #databaseResults{
+        margin-top:5%;
+        width:100%;
+    }
+    #displayName h3,#displayEmail h3{
+        font-size: 110%;
+    }
+    #errorMsg h2,#errorEmailMsg h2{
+        font-size:80%;
+    }
+}
+
+@media only screen and (max-width:414px){
+    #root,#databaseResults{
+        float:none;
+        width:95%;
+    }
+    #displayName h3,#displayEmail h3{
+        font-size: 110%;
+    }
+    #errorMsg h2,#errorEmailMsg h2{
+        font-size:80%;
+    }
+    #databaseResults{
+        margin-top:5%;
+        width:100%;
+    }
+}
+
+@media only screen and (max-width:375px){
+    #root,#databaseResults{
+        float:none;
+        width:95%;
+    }
+    #displayName h3,#displayEmail h3{
+        font-size: 110%;
+    }
+    #errorMsg h2,#errorEmailMsg h2{
+        font-size:80%;
+    }
+    #databaseResults{
+        margin-top:5%;
+        width:100%;
+    }
+}
+
+@media only screen and (max-width:360px){
+    #root,#databaseResults{
+        float:none;
+        width:95%;
+    }
+    #databaseResults{
+        margin-top:5%;
+        width:100%;
+    }
+    #displayName h3,#displayEmail h3{
+        font-size: 80%;
+    }
+    #errorMsg h2,#errorEmailMsg h2{
+        font-size:70%;
+    }
+}
+
+@media only screen and (max-width:320px){
+    #root,#databaseResults{
+        float:none;
+        width:95%;
+    }
+    #databaseResults{
+        margin-top:5%;
+        width:100%;
+    }
+    #displayName h3,#displayEmail h3{
+        font-size: 100%;
+    }
+    #errorMsg h2,#errorEmailMsg h2{
+        font-size:70%;
+    }
+}
